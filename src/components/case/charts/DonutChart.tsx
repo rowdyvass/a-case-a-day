@@ -32,18 +32,16 @@ interface DonutChartProps {
 }
 
 // Active shape renderer for hover effect
-const renderActiveShape = (props: {
-  cx: number
-  cy: number
-  innerRadius: number
-  outerRadius: number
-  startAngle: number
-  endAngle: number
-  fill: string
-  payload: { label: string; value: number }
-  percent: number
-}) => {
-  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent } = props
+const renderActiveShape = (props: unknown) => {
+  const { cx, cy, innerRadius, outerRadius, startAngle, endAngle, fill } = props as {
+    cx: number
+    cy: number
+    innerRadius: number
+    outerRadius: number
+    startAngle: number
+    endAngle: number
+    fill: string
+  }
 
   return (
     <g>
