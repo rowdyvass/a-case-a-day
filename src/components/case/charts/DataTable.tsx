@@ -132,8 +132,8 @@ export function DataTable({ data }: DataTableProps) {
             className="w-full px-4 py-2 text-sm border rounded-lg focus:outline-none focus:ring-2"
             style={{ 
               borderColor: palette.border,
-              focusRing: palette.primary
-            }}
+              ['--tw-ring-color' as string]: palette.primary
+            } as React.CSSProperties}
           />
           {searchTerm && (
             <button
