@@ -1,26 +1,1830 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-serif: "Fraunces", Georgia, serif;
+  --font-mono: "JetBrains Mono", monospace;
+  
+  /* Exhibit Design System */
+  --exhibit-radius: 0.5rem;
+  --exhibit-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+  --exhibit-shadow-hover: 0 4px 12px -2px rgb(0 0 0 / 0.08);
+  --exhibit-transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* ============================================
+     EDITORIAL CATEGORY COLORS
+     Muted, sophisticated palette for concept categories
+     ============================================ */
+  --category-strategy: #57534e;     /* warm stone */
+  --category-finance: #475569;      /* cool slate */
+  --category-marketing: #9f7aea;    /* muted purple */
+  --category-operations: #b45309;   /* warm amber */
+  --category-leadership: #047857;   /* muted emerald */
+  --category-economics: #4f46e5;    /* muted indigo */
+  
+  /* Lighter variants for subtle backgrounds */
+  --category-strategy-light: #f5f5f4;
+  --category-finance-light: #f1f5f9;
+  --category-marketing-light: #faf5ff;
+  --category-operations-light: #fffbeb;
+  --category-leadership-light: #ecfdf5;
+  --category-economics-light: #eef2ff;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  html {
+    @apply scroll-smooth antialiased;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans;
+    font-feature-settings: "ss01", "ss02", "cv01";
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight;
+  }
+
+  ::selection {
+    @apply bg-amber-200 text-amber-900;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  /* ============================================
+     EDITORIAL DIVIDERS & RULES
+     Thin, sophisticated separators
+     ============================================ */
+  .rule-thin {
+    @apply h-px bg-slate-200;
+  }
+  
+  .rule-thick {
+    @apply h-0.5 bg-slate-300;
+  }
+  
+  .rule-accent {
+    @apply h-0.5 bg-amber-400;
+  }
+  
+  .rule-category {
+    @apply h-0.5 rounded-full;
+    background-color: var(--category-color, #f59e0b);
+  }
+  
+  /* Section divider with centered label */
+  .section-divider {
+    @apply flex items-center gap-4 my-8;
+  }
+  
+  .section-divider::before,
+  .section-divider::after {
+    content: '';
+    @apply flex-1 h-px bg-slate-200;
+  }
+  
+  .section-divider-label {
+    @apply text-xs font-semibold uppercase tracking-widest text-slate-400;
+  }
+  
+  /* Editorial card with left accent */
+  .card-editorial {
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm transition-all duration-200;
+  }
+  
+  .card-editorial:hover {
+    @apply shadow-md border-slate-300;
+  }
+  
+  .card-editorial-accent {
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm transition-all duration-200;
+    border-left: 3px solid var(--category-color, #f59e0b);
+  }
+  
+  .card-editorial-accent:hover {
+    @apply shadow-md;
+  }
+  
+  .prose-case {
+    @apply leading-relaxed;
+  }
+  
+  .prose-case p {
+    @apply text-slate-700 leading-[1.8];
+    font-size: 1.0625rem; /* 17px - optimal for long-form reading */
+  }
+  
+  .prose-case p + p {
+    @apply mt-4;
+  }
+  
+  .prose-case strong {
+    @apply font-semibold text-slate-900;
+  }
+  
+  .prose-case em {
+    @apply italic;
+  }
+  
+  .prose-case h2 {
+    @apply text-2xl font-serif font-semibold text-slate-900 mt-12 mb-4;
+  }
+  
+  .prose-case h3 {
+    @apply text-xl font-serif font-medium text-slate-800 mt-8 mb-3;
+  }
+  
+  .prose-case ul, .prose-case ol {
+    @apply my-4 pl-6;
+  }
+  
+  .prose-case li {
+    @apply mb-2 text-slate-700 leading-relaxed;
+  }
+  
+  .prose-case blockquote {
+    @apply border-l-4 border-amber-400 pl-5 py-1 italic text-slate-600 my-6 bg-amber-50/50 rounded-r-lg;
+  }
+  
+  /* Drop cap for first paragraph of case studies */
+  .prose-case > section:first-child p:first-of-type::first-letter {
+    @apply font-serif text-5xl font-bold float-left mr-3 mt-1;
+    line-height: 1;
+    color: #1e293b;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-100;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-400;
+}
+
+/* Loading animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Fade in animation for cards */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.4s ease-out forwards;
+}
+
+/* ============================================
+   EXHIBIT DESIGN SYSTEM
+   Inspired by The Economist & NY Times
+   ============================================ */
+
+/* Exhibit Wrapper */
+.exhibit-wrapper {
+  @apply bg-white rounded-xl overflow-hidden;
+  box-shadow: var(--exhibit-shadow);
+  transition: box-shadow var(--exhibit-transition);
+}
+
+.exhibit-wrapper:hover {
+  box-shadow: var(--exhibit-shadow-hover);
+}
+
+/* Exhibit Header */
+.exhibit-header {
+  @apply px-6 pt-5 pb-4;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.exhibit-label {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.exhibit-accent-line {
+  @apply w-8 h-0.5 rounded-full;
+}
+
+.exhibit-number {
+  @apply text-[10px] font-semibold uppercase tracking-[0.15em] text-slate-400;
+}
+
+.exhibit-title {
+  @apply font-serif text-lg font-semibold text-slate-900 leading-snug;
+}
+
+.exhibit-subtitle {
+  @apply text-sm text-slate-500 mt-1 leading-relaxed;
+}
+
+/* Exhibit Content */
+.exhibit-content {
+  @apply px-6 py-5;
+}
+
+/* Exhibit Footer */
+.exhibit-footer {
+  @apply px-6 py-4 bg-slate-50/50;
+  border-top: 1px solid #f1f5f9;
+}
+
+.exhibit-note,
+.exhibit-source {
+  @apply text-xs text-slate-500 leading-relaxed;
+}
+
+.exhibit-note + .exhibit-source {
+  @apply mt-1;
+}
+
+.exhibit-note-label,
+.exhibit-source-label {
+  @apply font-medium text-slate-600 mr-1;
+}
+
+/* Exhibit Empty State */
+.exhibit-empty {
+  @apply text-sm text-slate-400 italic py-8 text-center;
+}
+
+.exhibit-unknown {
+  @apply text-sm text-slate-500 py-4 px-3 bg-slate-50 rounded-lg;
+}
+
+/* ============================================
+   CHART TOOLTIPS
+   ============================================ */
+
+.chart-tooltip {
+  @apply bg-white rounded-lg px-4 py-3 shadow-lg;
+  border: 1px solid #e2e8f0;
+  min-width: 160px;
+}
+
+.chart-tooltip-label {
+  @apply text-sm font-semibold text-slate-900 pb-2 mb-2;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.chart-tooltip-items {
+  @apply space-y-1.5;
+}
+
+.chart-tooltip-item {
+  @apply flex items-center gap-2 text-sm;
+}
+
+.chart-tooltip-dot {
+  @apply w-2.5 h-2.5 rounded-full flex-shrink-0;
+}
+
+.chart-tooltip-name {
+  @apply text-slate-600 flex-1;
+}
+
+.chart-tooltip-value {
+  @apply font-medium text-slate-900 tabular-nums;
+}
+
+.chart-tooltip-total {
+  @apply flex justify-between items-center pt-2 mt-2 text-sm;
+  border-top: 1px solid #e2e8f0;
+}
+
+.chart-tooltip-total-label {
+  @apply font-medium text-slate-600;
+}
+
+.chart-tooltip-total-value {
+  @apply font-semibold text-slate-900;
+}
+
+.chart-tooltip-mini {
+  @apply bg-slate-900 text-white text-xs font-medium px-2 py-1 rounded;
+}
+
+/* ============================================
+   CHART LEGENDS
+   Minimalist, clear legends for all chart types
+   ============================================ */
+
+.chart-legend {
+  @apply flex flex-wrap gap-x-5 gap-y-2 pt-4 mt-2;
+  border-top: 1px solid #f1f5f9;
+}
+
+.chart-legend-horizontal {
+  @apply flex-row justify-center;
+}
+
+.chart-legend-vertical {
+  @apply flex-col items-start;
+}
+
+.chart-legend-grid {
+  @apply grid grid-cols-2 md:grid-cols-3 gap-3;
+}
+
+.chart-legend-item {
+  @apply flex items-center gap-2 text-xs transition-all duration-150 cursor-pointer;
+  background: none;
+  border: none;
+  padding: 4px 0;
+}
+
+.chart-legend-item:hover {
+  opacity: 1 !important;
+}
+
+.chart-legend-item-inactive {
+  opacity: 0.3;
+}
+
+.chart-legend-dot {
+  @apply w-2.5 h-2.5 rounded-full flex-shrink-0;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.8);
+}
+
+.chart-legend-line {
+  @apply w-4 h-0.5 rounded-full flex-shrink-0;
+}
+
+.chart-legend-label {
+  @apply text-slate-600 font-medium;
+}
+
+.chart-legend-value {
+  @apply text-slate-400 ml-1 tabular-nums;
+}
+
+/* Compact legend for smaller charts */
+.chart-legend-compact {
+  @apply flex flex-wrap gap-4 text-xs text-slate-500 pt-3 mt-2;
+  border-top: 1px solid #f1f5f9;
+}
+
+.chart-legend-compact-item {
+  @apply flex items-center gap-1.5;
+}
+
+.chart-legend-compact-dot {
+  @apply w-2 h-2 rounded-full;
+}
+
+/* Legend with title/description */
+.chart-legend-titled {
+  @apply pt-3 mt-2;
+  border-top: 1px solid #f1f5f9;
+}
+
+.chart-legend-title {
+  @apply text-[10px] uppercase tracking-wider text-slate-400 font-medium mb-2;
+}
+
+/* ============================================
+   CHART ANNOTATIONS
+   ============================================ */
+
+.chart-annotation-box {
+  @apply text-xs text-slate-700 px-2 py-1.5 rounded shadow-sm;
+  text-align: center;
+  border: 1px solid;
+  backdrop-filter: blur(4px);
+}
+
+.chart-callout {
+  @apply py-3 px-4 rounded-r-lg text-sm;
+  border-left: 3px solid;
+}
+
+/* ============================================
+   EXHIBIT TABLES
+   ============================================ */
+
+.exhibit-table-wrapper {
+  @apply overflow-x-auto -mx-2;
+}
+
+.exhibit-table {
+  @apply w-full text-sm;
+}
+
+.exhibit-table th {
+  @apply px-4 py-3 text-left font-semibold text-slate-700 bg-slate-50/80;
+  border-bottom: 2px solid;
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+}
+
+.exhibit-table td {
+  @apply px-4 py-3 text-slate-600;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.exhibit-table tr:last-child td {
+  border-bottom: none;
+}
+
+.exhibit-table tr:hover td {
+  @apply bg-slate-50/50;
+}
+
+.exhibit-table-cell-primary {
+  @apply font-medium text-slate-900;
+}
+
+/* ============================================
+   EXHIBIT QUOTES
+   ============================================ */
+
+.exhibit-quote {
+  @apply py-4 pl-6;
+  border-left: 4px solid;
+}
+
+.exhibit-quote-text {
+  @apply font-serif text-lg text-slate-700 leading-relaxed italic;
+}
+
+.exhibit-quote-attribution {
+  @apply mt-4 text-sm text-slate-500;
+}
+
+.exhibit-quote-author {
+  @apply font-semibold text-slate-700;
+}
+
+.exhibit-quote-role {
+  @apply text-slate-500;
+}
+
+/* ============================================
+   EXHIBIT DIAGRAMS
+   ============================================ */
+
+.exhibit-diagram {
+  @apply bg-gradient-to-b from-slate-50 to-white rounded-lg p-6;
+}
+
+.exhibit-diagram-type {
+  @apply text-xs font-semibold uppercase tracking-wider text-slate-400 mb-4;
+}
+
+.exhibit-diagram-elements {
+  @apply flex flex-wrap gap-3 mb-4;
+}
+
+.exhibit-diagram-element {
+  @apply px-4 py-2.5 rounded-lg text-sm font-medium text-slate-800;
+  border: 1px solid;
+}
+
+.exhibit-diagram-description {
+  @apply text-sm text-slate-600 leading-relaxed;
+}
+
+/* ============================================
+   CUSTOM EXHIBIT ANIMATIONS
+   ============================================ */
+
+@keyframes exhibitReveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes exhibitPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes exhibitSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes exhibitScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes numberMorph {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-4px);
+    opacity: 0;
+  }
+  51% {
+    transform: translateY(4px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-exhibit-reveal {
+  animation: exhibitReveal 0.4s ease-out forwards;
+}
+
+.animate-exhibit-stagger > * {
+  opacity: 0;
+  animation: exhibitReveal 0.4s ease-out forwards;
+}
+
+.animate-exhibit-stagger > *:nth-child(1) { animation-delay: 0ms; }
+.animate-exhibit-stagger > *:nth-child(2) { animation-delay: 50ms; }
+.animate-exhibit-stagger > *:nth-child(3) { animation-delay: 100ms; }
+.animate-exhibit-stagger > *:nth-child(4) { animation-delay: 150ms; }
+.animate-exhibit-stagger > *:nth-child(5) { animation-delay: 200ms; }
+.animate-exhibit-stagger > *:nth-child(6) { animation-delay: 250ms; }
+.animate-exhibit-stagger > *:nth-child(7) { animation-delay: 300ms; }
+.animate-exhibit-stagger > *:nth-child(8) { animation-delay: 350ms; }
+
+/* ============================================
+   CUSTOM INTERACTIVE EXHIBITS
+   ============================================ */
+
+/* Decision Simulator */
+.decision-simulator {
+  @apply space-y-4;
+}
+
+.decision-context {
+  @apply rounded-xl p-5 text-white;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+}
+
+.decision-role {
+  @apply text-xs uppercase tracking-wider text-slate-400 mb-1;
+}
+
+.decision-scenario {
+  @apply text-sm leading-relaxed text-slate-200;
+}
+
+.decision-card {
+  @apply rounded-xl border-2 p-5 bg-white;
+  transition: all var(--exhibit-transition);
+}
+
+.decision-progress {
+  @apply inline-flex items-center gap-2 text-xs font-medium px-3 py-1.5 rounded-full;
+}
+
+.decision-question {
+  @apply font-serif text-lg font-semibold text-slate-900 mb-2;
+}
+
+.decision-options {
+  @apply space-y-2.5 mt-4;
+}
+
+.decision-option {
+  @apply w-full text-left p-4 rounded-lg border-2 border-slate-100;
+  @apply hover:border-current hover:shadow-md;
+  transition: all var(--exhibit-transition);
+}
+
+.decision-option-label {
+  @apply font-medium text-slate-900;
+}
+
+.decision-outcome {
+  @apply rounded-xl p-5 border-2;
+}
+
+.decision-outcome-title {
+  @apply font-serif text-xl font-semibold mb-2;
+}
+
+.decision-outcome-desc {
+  @apply text-sm leading-relaxed opacity-90;
+}
+
+/* Reveal Cards */
+.reveal-cards-grid {
+  @apply grid grid-cols-2 gap-4;
+}
+
+.reveal-card {
+  @apply cursor-pointer;
+  perspective: 1000px;
+}
+
+.reveal-card-inner {
+  @apply relative w-full min-h-[140px] transition-transform duration-500;
+  transform-style: preserve-3d;
+}
+
+.reveal-card.revealed .reveal-card-inner {
+  transform: rotateY(180deg);
+}
+
+.reveal-card-front,
+.reveal-card-back {
+  @apply absolute inset-0 rounded-xl p-4 flex flex-col;
+  backface-visibility: hidden;
+}
+
+.reveal-card-front {
+  @apply items-center justify-center text-center text-white;
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+}
+
+.reveal-card-back {
+  @apply border-2;
+  transform: rotateY(180deg);
+}
+
+.reveal-card-hint {
+  @apply text-xs text-slate-400 mt-2;
+}
+
+/* Scenario Builder */
+.scenario-builder {
+  @apply space-y-5;
+}
+
+.scenario-prompt {
+  @apply text-sm text-slate-600 leading-relaxed p-4 bg-slate-50 rounded-lg;
+}
+
+.scenario-category {
+  @apply rounded-xl border overflow-hidden;
+}
+
+.scenario-category-header {
+  @apply px-4 py-3 bg-slate-100 font-semibold text-sm text-slate-700;
+}
+
+.scenario-options {
+  @apply p-3 space-y-2;
+}
+
+.scenario-option {
+  @apply w-full text-left p-4 rounded-lg border-2 transition-all;
+}
+
+.scenario-option.selected {
+  @apply border-current;
+}
+
+.scenario-option-check {
+  @apply w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0;
+  transition: all var(--exhibit-transition);
+}
+
+.scenario-option-content {
+  @apply flex-1;
+}
+
+.scenario-option-label {
+  @apply font-medium text-slate-900 text-sm;
+}
+
+.scenario-option-desc {
+  @apply text-xs text-slate-600 mt-0.5;
+}
+
+.scenario-option-meta {
+  @apply flex flex-wrap gap-1.5 mt-2;
+}
+
+.scenario-tag {
+  @apply text-xs px-2 py-0.5 rounded-full;
+}
+
+/* What-If Calculator */
+.calculator-wrapper {
+  @apply space-y-6;
+}
+
+.calculator-scenario {
+  @apply text-sm text-slate-600 leading-relaxed;
+}
+
+.calculator-slider {
+  @apply space-y-2;
+}
+
+.calculator-slider-header {
+  @apply flex justify-between text-sm;
+}
+
+.calculator-slider-label {
+  @apply text-slate-700;
+}
+
+.calculator-slider-value {
+  @apply font-semibold text-slate-900 tabular-nums;
+}
+
+.calculator-input {
+  @apply w-full h-2 rounded-lg appearance-none cursor-pointer;
+  background: linear-gradient(to right, var(--slider-fill, currentColor) var(--slider-percent, 0%), #e2e8f0 var(--slider-percent, 0%));
+}
+
+.calculator-input::-webkit-slider-thumb {
+  @apply appearance-none w-5 h-5 rounded-full shadow-md cursor-grab;
+  background: var(--slider-fill, currentColor);
+  border: 3px solid white;
+}
+
+.calculator-input::-webkit-slider-thumb:active {
+  @apply cursor-grabbing;
+  transform: scale(1.1);
+}
+
+.calculator-range {
+  @apply flex justify-between text-xs text-slate-400;
+}
+
+.calculator-outcome {
+  @apply p-5 rounded-xl border-2;
+}
+
+.calculator-outcome-header {
+  @apply flex items-center gap-2 mb-2;
+}
+
+.calculator-outcome-icon {
+  @apply text-lg;
+}
+
+.calculator-outcome-title {
+  @apply font-semibold;
+}
+
+.calculator-outcome-desc {
+  @apply text-sm opacity-90;
+}
+
+/* Comparative Ranker */
+.ranker-wrapper {
+  @apply space-y-5;
+}
+
+.ranker-prompt {
+  @apply text-sm text-slate-600 mb-2;
+}
+
+.ranker-criteria {
+  @apply flex flex-wrap gap-2 mb-4;
+}
+
+.ranker-criterion {
+  @apply text-xs px-2.5 py-1 bg-white/60 text-slate-600 rounded-full;
+}
+
+.ranker-columns {
+  @apply grid gap-6 md:grid-cols-2;
+}
+
+.ranker-column-title {
+  @apply text-sm font-semibold text-slate-700 mb-3;
+}
+
+.ranker-items {
+  @apply space-y-2;
+}
+
+.ranker-item {
+  @apply p-3 rounded-lg transition-all cursor-pointer;
+}
+
+.ranker-item-unranked {
+  @apply bg-white border border-slate-200 hover:border-current hover:shadow-md;
+}
+
+.ranker-item-ranked {
+  @apply border-2;
+}
+
+.ranker-item-rank {
+  @apply w-8 h-8 rounded-full flex items-center justify-center font-bold text-white flex-shrink-0;
+}
+
+.ranker-item-content {
+  @apply flex-1;
+}
+
+.ranker-item-title {
+  @apply font-medium text-slate-900 text-sm;
+}
+
+.ranker-item-desc {
+  @apply text-xs text-slate-600 mt-0.5;
+}
+
+.ranker-item-actions {
+  @apply flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity;
+}
+
+.ranker-dropzone {
+  @apply p-6 border-2 border-dashed rounded-lg text-center;
+}
+
+.ranker-score {
+  @apply rounded-xl p-4 text-white;
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+/* ============================================
+   CHART SPECIFIC STYLES
+   ============================================ */
+
+/* Waterfall Chart */
+.waterfall-connector {
+  stroke: #94a3b8;
+  stroke-width: 1;
+  stroke-dasharray: 4 2;
+}
+
+/* Sankey Diagram */
+.sankey-node {
+  @apply rounded-lg px-4 py-3 text-sm font-medium;
+  transition: all var(--exhibit-transition);
+}
+
+.sankey-node:hover {
+  transform: translateX(2px);
+}
+
+.sankey-flow {
+  @apply h-8 rounded-full flex items-center justify-end px-3 text-xs font-medium text-white;
+  transition: all var(--exhibit-transition);
+}
+
+.sankey-flow:hover {
+  filter: brightness(1.1);
+}
+
+/* Donut Chart */
+.donut-center {
+  @apply absolute inset-0 flex flex-col items-center justify-center text-center;
+}
+
+.donut-center-value {
+  @apply font-serif text-3xl font-bold text-slate-900;
+}
+
+.donut-center-label {
+  @apply text-sm text-slate-500;
+}
+
+/* Timeline */
+.timeline-container {
+  @apply relative;
+}
+
+.timeline-line {
+  @apply absolute left-3 top-4 bottom-4 w-0.5 bg-slate-200;
+}
+
+.timeline-item {
+  @apply relative pl-10 pb-6 last:pb-0;
+}
+
+.timeline-dot {
+  @apply absolute left-0 top-1.5 w-6 h-6 rounded-full ring-4 ring-white flex items-center justify-center;
+}
+
+.timeline-card {
+  @apply rounded-xl border-2 p-4 bg-white cursor-pointer;
+  transition: all var(--exhibit-transition);
+}
+
+.timeline-card:hover {
+  box-shadow: var(--exhibit-shadow-hover);
+}
+
+.timeline-card.expanded {
+  @apply bg-slate-50/50;
+}
+
+.timeline-date {
+  @apply text-xs font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded;
+}
+
+.timeline-title {
+  @apply font-semibold text-slate-900 mt-2;
+}
+
+.timeline-content {
+  @apply mt-3 space-y-3 text-sm text-slate-600;
+}
+
+/* Metric Cards */
+.metric-card {
+  @apply rounded-xl p-5 transition-all;
+  box-shadow: var(--exhibit-shadow);
+}
+
+.metric-card:hover {
+  box-shadow: var(--exhibit-shadow-hover);
+}
+
+.metric-label {
+  @apply text-sm font-medium text-slate-600 mb-1;
+}
+
+.metric-value {
+  @apply font-serif text-3xl font-bold text-slate-900;
+}
+
+.metric-change {
+  @apply flex items-center gap-1 text-sm mt-1;
+}
+
+.metric-change-positive {
+  @apply text-emerald-600;
+}
+
+.metric-change-negative {
+  @apply text-red-600;
+}
+
+.metric-sparkline {
+  @apply h-12 mt-3;
+}
+
+/* Process Flow */
+.process-flow {
+  @apply flex items-center gap-2 overflow-x-auto py-2;
+}
+
+.process-step {
+  @apply flex-shrink-0 px-4 py-3 rounded-lg text-sm font-medium;
+  transition: all var(--exhibit-transition);
+}
+
+.process-arrow {
+  @apply flex-shrink-0 text-slate-300;
+}
+
+/* Comparison Grid */
+.comparison-grid {
+  @apply grid gap-4;
+}
+
+.comparison-item {
+  @apply rounded-xl border p-5 transition-all;
+}
+
+.comparison-item:hover {
+  box-shadow: var(--exhibit-shadow-hover);
+}
+
+.comparison-header {
+  @apply flex items-center justify-between mb-4;
+}
+
+.comparison-title {
+  @apply font-semibold text-slate-900;
+}
+
+.comparison-badge {
+  @apply text-xs font-medium px-2 py-1 rounded-full;
+}
+
+/* ============================================
+   PRINT STYLES
+   Professional PDF export styling
+   ============================================ */
+
+@media print {
+  /* Page Setup */
+  @page {
+    size: letter;
+    margin: 0.75in 0.75in 1in 0.75in;
+  }
+
+  @page :first {
+    margin-top: 0;
+  }
+
+  /* Reset & Base */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  html, body {
+    font-size: 11pt;
+    line-height: 1.5;
+    background: white !important;
+  }
+
+  /* Hide non-print elements */
+  nav,
+  header nav,
+  .draft-banner,
+  button,
+  [data-print-hide],
+  .progress-bar-container,
+  .auth-prompt,
+  .question-submit-btn,
+  .question-feedback,
+  .question-score {
+    display: none !important;
+  }
+
+  /* ============================================
+     PRINT COVER PAGE
+     ============================================ */
+
+  .print-cover {
+    display: flex !important;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    text-align: center;
+    page-break-after: always;
+    padding: 2in 1in;
+    background: white !important;
+  }
+
+  .print-cover-brand {
+    font-size: 10pt;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #64748b;
+    margin-bottom: 3rem;
+  }
+
+  .print-cover-title {
+    font-family: var(--font-serif);
+    font-size: 28pt;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #0f172a;
+    margin-bottom: 1.5rem;
+    max-width: 6in;
+  }
+
+  .print-cover-company {
+    font-size: 14pt;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 0.5rem;
+  }
+
+  .print-cover-industry {
+    font-size: 11pt;
+    color: #64748b;
+    margin-bottom: 2rem;
+  }
+
+  .print-cover-divider {
+    width: 3in;
+    height: 2px;
+    background: #f59e0b;
+    margin: 2rem auto;
+  }
+
+  .print-cover-meta {
+    font-size: 10pt;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+  }
+
+  .print-cover-concepts {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e2e8f0;
+    max-width: 5in;
+  }
+
+  .print-cover-concepts-title {
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    margin-bottom: 0.75rem;
+  }
+
+  .print-cover-concepts-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .print-cover-concept {
+    font-size: 9pt;
+    padding: 0.25rem 0.75rem;
+    background: #f1f5f9;
+    border-radius: 1rem;
+    color: #475569;
+  }
+
+  /* ============================================
+     MAIN CONTENT AREA
+     ============================================ */
+
+  article {
+    background: white !important;
+  }
+
+  /* Hide the web header, show simplified print version */
+  article > header:first-of-type {
+    display: none !important;
+  }
+
+  .print-header {
+    display: block !important;
+    padding: 0 0 1.5rem 0;
+    margin-bottom: 1.5rem;
+    border-bottom: 2px solid #0f172a;
+  }
+
+  .print-header-title {
+    font-family: var(--font-serif);
+    font-size: 20pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+  }
+
+  .print-header-meta {
+    font-size: 10pt;
+    color: #64748b;
+  }
+
+  /* Content Container */
+  .mx-auto.max-w-4xl {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* ============================================
+     TYPOGRAPHY
+     ============================================ */
+
+  .prose-case p {
+    font-size: 11pt !important;
+    line-height: 1.6 !important;
+    color: #1e293b !important;
+    text-align: justify;
+    hyphens: auto;
+  }
+
+  .prose-case h2 {
+    font-size: 14pt !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.75rem !important;
+    page-break-after: avoid;
+  }
+
+  .prose-case h3 {
+    font-size: 12pt !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
+    page-break-after: avoid;
+  }
+
+  /* Section styling */
+  .prose-case > section {
+    margin-bottom: 1.5rem !important;
+  }
+
+  /* Drop cap adjustment for print */
+  .prose-case > section:first-child p:first-of-type::first-letter {
+    font-size: 42pt !important;
+    line-height: 1;
+  }
+
+  /* ============================================
+     EXHIBITS
+     ============================================ */
+
+  .exhibit-wrapper {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin: 1.5rem 0 !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
+
+  .exhibit-header {
+    background: #f8fafc !important;
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 0.75rem 1rem !important;
+  }
+
+  .exhibit-number {
+    font-size: 8pt !important;
+    color: #64748b !important;
+  }
+
+  .exhibit-title {
+    font-size: 11pt !important;
+    font-weight: 600 !important;
+  }
+
+  .exhibit-subtitle {
+    font-size: 9pt !important;
+    color: #64748b !important;
+  }
+
+  .exhibit-content {
+    padding: 1rem !important;
+    overflow: visible !important;
+  }
+
+  .exhibit-footer {
+    background: #f8fafc !important;
+    padding: 0.5rem 1rem !important;
+    border-top: 1px solid #e2e8f0 !important;
+  }
+
+  .exhibit-note,
+  .exhibit-source {
+    font-size: 8pt !important;
+    color: #64748b !important;
+  }
+
+  /* Chart containers - ensure they don't break and have proper height */
+  .recharts-wrapper,
+  .recharts-surface {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  
+  .recharts-responsive-container {
+    min-height: 280px !important;
+    height: auto !important;
+  }
+
+  /* ============================================
+     FORCE EXPANDED CONTENT IN PRINT
+     All collapsible/expandable content should show
+     ============================================ */
+
+  /* Timeline - show all expanded content */
+  .timeline-content {
+    display: block !important;
+    height: auto !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+
+  .timeline-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .timeline-card {
+    border: 1px solid #e2e8f0 !important;
+    background: white !important;
+  }
+
+  /* Hide expand/collapse indicators in print */
+  .timeline-card > .flex.items-center.justify-center:last-child {
+    display: none !important;
+  }
+
+  /* Enhanced table - show all expanded rows */
+  .expanded-content,
+  [class*="expandedContent"],
+  .row-expanded-content {
+    display: block !important;
+    height: auto !important;
+    opacity: 1 !important;
+  }
+
+  /* Source excerpt - show full text */
+  .source-excerpt-full,
+  [class*="fullText"] {
+    display: block !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  /* Hide expand/collapse buttons */
+  button[class*="expand"],
+  [class*="collapse-button"],
+  .expand-button,
+  .collapse-btn {
+    display: none !important;
+  }
+
+  /* Reveal cards - show all cards flipped */
+  .reveal-card-inner {
+    transform: rotateY(180deg) !important;
+  }
+  
+  .reveal-card-front {
+    display: none !important;
+  }
+  
+  .reveal-card-back {
+    display: block !important;
+    position: relative !important;
+    transform: none !important;
+    backface-visibility: visible !important;
+  }
+
+  /* Decision simulator - show all states */
+  .decision-options,
+  .decision-outcome {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  /* Scenario builder - show all options */
+  .scenario-options {
+    display: block !important;
+  }
+
+  /* Drilldown - show hint text as static */
+  .drilldown-hint {
+    display: none !important;
+  }
+
+  /* Remove all Framer Motion animations */
+  [style*="opacity: 0"],
+  [style*="height: 0"] {
+    opacity: 1 !important;
+    height: auto !important;
+  }
+
+  /* Ensure overflow doesn't clip content */
+  .overflow-hidden,
+  .overflow-x-auto,
+  .overflow-y-auto {
+    overflow: visible !important;
+  }
+
+  /* ============================================
+     QUESTIONS SECTION
+     ============================================ */
+
+  .questions-section {
+    page-break-before: always;
+    padding-top: 0 !important;
+  }
+
+  .questions-section-title {
+    font-family: var(--font-serif);
+    font-size: 16pt;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #0f172a;
+  }
+
+  .questions-section-intro {
+    font-size: 10pt;
+    color: #64748b;
+    margin-bottom: 1.5rem;
+  }
+
+  /* Question items */
+  .question-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    margin-bottom: 1.5rem !important;
+    padding: 1rem !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 0.5rem !important;
+    background: white !important;
+  }
+
+  .question-number {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    background: #0f172a !important;
+    color: white !important;
+    font-size: 10pt;
+    font-weight: 600;
+    border-radius: 50%;
+    margin-right: 0.75rem;
+  }
+
+  .question-text {
+    font-size: 11pt !important;
+    font-weight: 500 !important;
+    color: #0f172a !important;
+    line-height: 1.5 !important;
+  }
+
+  .question-type-badge {
+    font-size: 8pt !important;
+    padding: 0.125rem 0.5rem !important;
+    background: #f1f5f9 !important;
+    color: #64748b !important;
+    border-radius: 1rem;
+    margin-left: 0.5rem;
+  }
+
+  .question-options {
+    margin-top: 0.75rem;
+    padding-left: 2.25rem;
+  }
+
+  .question-option {
+    font-size: 10pt;
+    color: #334155;
+    margin-bottom: 0.25rem;
+    padding-left: 0.5rem;
+  }
+
+  .question-option::before {
+    content: "○ ";
+    color: #94a3b8;
+  }
+
+  /* Hide interactive elements */
+  .question-input,
+  .question-textarea,
+  .question-submit,
+  .question-response-area,
+  .existing-response,
+  .feedback-section {
+    display: none !important;
+  }
+
+  /* ============================================
+     CONCEPTS FOOTER
+     ============================================ */
+
+  .concepts-footer {
+    margin-top: 2rem !important;
+    padding-top: 1rem !important;
+    border-top: 1px solid #e2e8f0 !important;
+  }
+
+  .concepts-footer h3 {
+    font-size: 9pt !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #64748b !important;
+  }
+
+  /* Concept badges in footer */
+  .concepts-footer .badge {
+    font-size: 9pt !important;
+    padding: 0.25rem 0.75rem !important;
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #e2e8f0 !important;
+  }
+
+  /* ============================================
+     PAGE BREAKS & LINE BREAK CONTROL
+     ============================================ */
+
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Ensure headers stay with following content */
+  h1 + *, h2 + *, h3 + *, h4 + * {
+    page-break-before: avoid !important;
+    break-before: avoid !important;
+  }
+
+  p {
+    orphans: 4 !important;
+    widows: 4 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  li {
+    orphans: 3 !important;
+    widows: 3 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Section headers with their content */
+  .prose-case > section {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  /* Keep section headers with at least some content */
+  .prose-case > section > div:first-child,
+  .prose-case > section > h2,
+  .prose-case > section > h3 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
+  }
+
+  /* Prevent breaks in the middle of flex/grid containers */
+  .flex, .grid {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Force page break before major sections */
+  .page-break-before {
+    page-break-before: always !important;
+    break-before: always !important;
+  }
+
+  /* Allow page breaks between sections but not within */
+  .prose-case > section + section {
+    page-break-before: auto;
+    break-before: auto;
+  }
+
+  /* Keep figures/exhibits together */
+  figure,
+  .exhibit-wrapper,
+  .chart-container {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-before: auto;
+    break-before: auto;
+  }
+
+  /* If an exhibit is too tall, allow it on its own page */
+  figure.large-exhibit,
+  .exhibit-wrapper.large-exhibit {
+    page-break-before: always !important;
+    break-before: always !important;
+  }
+
+  /* Tables should stay together if possible */
+  table {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* But allow breaks for very long tables */
+  table.allow-break {
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  tfoot {
+    display: table-footer-group;
+  }
+
+  /* Blockquotes should not break */
+  blockquote {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Card-like elements should not break */
+  .card,
+  .card-editorial,
+  .metric-card,
+  .timeline-card,
+  .question-item {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* ============================================
+     UTILITY CLASSES
+     ============================================ */
+
+  /* Ensure badges print with background */
+  .badge,
+  [class*="Badge"] {
+    background: #f1f5f9 !important;
+    color: #334155 !important;
+    border: 1px solid #e2e8f0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Links print as regular text */
+  a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  /* Remove hover effects */
+  *:hover {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  /* Print footer */
+  .print-footer {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0.5rem 0.75in;
+    font-size: 8pt;
+    color: #94a3b8;
+    border-top: 1px solid #e2e8f0;
+    background: white;
+  }
+
+  .print-footer-left {
+    float: left;
+  }
+
+  .print-footer-right {
+    float: right;
+  }
+
+  /* ============================================
+     COMPONENT-SPECIFIC PRINT OVERRIDES
+     ============================================ */
+
+  /* Timeline - always show expanded */
+  .timeline-container .timeline-item {
+    margin-bottom: 1rem;
+  }
+
+  .timeline-container .timeline-card .timeline-content {
+    display: block !important;
+    height: auto !important;
+    max-height: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    overflow: visible !important;
+    margin-top: 0.75rem;
+  }
+
+  .timeline-container .timeline-card .timeline-content p,
+  .timeline-container .timeline-card .timeline-content div {
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  /* Timeline expand chevron - hide */
+  .timeline-card svg[class*="w-4"][class*="h-4"] {
+    display: none !important;
+  }
+
+  /* Enhanced Table - show expanded rows */
+  tr[class*="expanded"] + tr,
+  .expanded-row-content {
+    display: table-row !important;
+  }
+
+  /* Data table - ensure full width */
+  .exhibit-table-wrapper {
+    width: 100% !important;
+    overflow: visible !important;
+  }
+
+  /* Metric cards - proper sizing */
+  .metric-card {
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .metric-sparkline {
+    height: 50px !important;
+    min-height: 50px !important;
+  }
+
+  /* Process flow - ensure visibility */
+  .process-flow {
+    flex-wrap: wrap !important;
+  }
+
+  .process-step {
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* Comparison grid */
+  .comparison-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Scenario calculator - show all */
+  .calculator-wrapper {
+    display: block !important;
+  }
+
+  .calculator-outcome {
+    margin-top: 1rem !important;
+    display: block !important;
+    opacity: 1 !important;
+  }
+
+  /* Hide interactive hints and instructions */
+  .click-hint,
+  .interaction-hint,
+  [class*="hint"],
+  .text-xs.text-slate-500.text-center {
+    display: none !important;
+  }
+
+  /* Simple custom exhibits - show all content */
+  .scenario-category,
+  .reveal-cards-grid,
+  .ranker-wrapper {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Ensure motion divs show content */
+  [style*="transform"],
+  [style*="translateX"],
+  [style*="translateY"] {
+    transform: none !important;
+  }
+
+  /* Badge and tag visibility */
+  .scenario-tag,
+  .ranker-criterion {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background-color: #f1f5f9 !important;
+  }
+
+  /* Prose content - better text flow */
+  .prose-case {
+    text-align: justify !important;
+    hyphens: auto !important;
+    -webkit-hyphens: auto !important;
+  }
+
+  .prose-case p {
+    margin-bottom: 0.75rem !important;
+  }
+
+  /* Space between paragraphs for better readability */
+  .prose-case .space-y-4 > p + p {
+    margin-top: 0.5rem !important;
+  }
 }

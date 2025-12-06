@@ -1,0 +1,245 @@
+// Prisma schema for A Case A Day MVP
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model for operators/admins
+model User {
+  id                String             @id @default(cuid())
+  email             String             @unique
+  name              String?
+  password          String
+  role              String             @default("operator") // operator, admin, student
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  cases             Case[]             @relation("CaseAuthor")
+  questionResponses QuestionResponse[]
+}
+
+// Main case study model
+model Case {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  title         String
+  company       String
+  industry      String
+  summary       String         // Brief overview for cards/listings
+  content       String         // Full case narrative (stored as JSON string)
+  status        String         @default("draft") // draft, review, published
+  featuredImage String?        // Path to AI-generated illustration
+  illustrationPrompt String?   // Description of illustration object for variety tracking
+  brandColor    String?        // Hex color for company brand (e.g., "#FF5A5F")
+  publishedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  // Case categorization
+  category      String         @default("daily")       // "daily" or "canonical"
+  publishedDate DateTime?                              // Date the case is meant for (for daily cases)
+  
+  // Canonical case metadata
+  track         String?                                // Core, Finance, Marketing, Strategy, Operations, Leadership
+  skill         String?                                // Quantitative Analysis, Strategic Thinking, Communication, Leadership, Problem Solving
+  difficulty    String         @default("intermediate") // beginner, intermediate, advanced
+  
+  // Research enrichment metadata
+  enrichmentData      String?  // JSON: sources, timestamps, counts
+  enrichmentSources   String?  // JSON array of source URLs and titles
+  
+  // Research sufficiency metadata
+  sufficiencyScore    Int?     // 0-100 sufficiency score
+  sufficiencyLevel    String?  // full, partial, basic
+  sufficiencyData     String?  // JSON: detailed sufficiency analysis
+  
+  // Validation metadata
+  validationScore     Int?     // 0-100 quality score
+  validationConfidence String? // high, medium, low
+  validationData      String?  // JSON: full validation results
+  requiresReview      Boolean  @default(false) // Flagged for human review
+  reviewedAt          DateTime? // When human review was completed
+  reviewedBy          String?  // User ID who reviewed
+  
+  // Case quality grading
+  caseGrade           String?  // A, A-, B+, B, B-, C, D, F
+  caseGradeScore      Int?     // 0-100 comprehensive score
+  caseGradeData       String?  // JSON: detailed grading breakdown
+  improvementIterations Int    @default(0) // Number of improvement attempts
+  
+  // Prompt version tracking
+  promptVersions      String?  // JSON: { analyze: "v1.0.0", case: "v1.0.1", ... }
+  
+  // Relations
+  authorId      String
+  author        User           @relation("CaseAuthor", fields: [authorId], references: [id])
+  sourceArticles SourceArticle[]
+  exhibits      Exhibit[]
+  questions     Question[]
+  concepts      CaseConcept[]
+  protagonistNames ProtagonistName[]
+}
+
+// Protagonist and supporting character name tracking to prevent reuse
+model ProtagonistName {
+  id            String   @id @default(cuid())
+  name          String   // Full name (e.g., "Marcus Chen")
+  firstName     String   // Extracted first name for similarity matching (e.g., "Marcus")
+  caseId        String
+  case          Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  isProtagonist Boolean  @default(true) // true = protagonist, false = supporting character
+  publishedDate DateTime // When the case was published/created
+  createdAt     DateTime @default(now())
+
+  @@index([firstName])
+  @@index([publishedDate])
+  @@index([name])
+}
+
+// Source articles used to create the case
+model SourceArticle {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  type      String   // url, text, pdf
+  title     String?
+  content   String   // The actual article content
+  url       String?  // Original URL if applicable
+  createdAt DateTime @default(now())
+}
+
+// Exhibits (charts, tables, diagrams) for cases
+model Exhibit {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  type      String   // table, chart, diagram, quote
+  title     String
+  data      String   // JSON string containing exhibit data
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Questions for each case
+model Question {
+  id              String             @id @default(cuid())
+  caseId          String
+  case            Case               @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  text            String
+  type            String             @default("free_text") // multiple_choice, free_text, ranking, framework_application
+  order           Int                @default(0)
+  difficulty      String             @default("medium") // easy, medium, hard
+  options         String?            // JSON array of options for MC/ranking questions
+  correctAnswer   String?            // JSON for correct answer (index for MC, array for ranking)
+  exemplaryAnswer String?            // Model answer shown after submission
+  rubric          String?            // JSON grading criteria for AI grading
+  frameworkType   String?            // Which MBA framework to apply (for framework_application type)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  responses       QuestionResponse[]
+}
+
+// User responses to questions
+model QuestionResponse {
+  id         String    @id @default(cuid())
+  questionId String
+  question   Question  @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  response   String    // JSON storing the user's answer
+  score      Int?      // Score out of 10
+  feedback   String?   // AI-generated feedback
+  gradedAt   DateTime? // When the response was graded
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@unique([questionId, userId]) // One response per user per question
+}
+
+// MBA concepts and frameworks
+model Concept {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String        @unique
+  category    String        // Finance, Marketing, Strategy, Operations, Leadership, Economics
+  description String?       // Brief description
+  content     String?       // Rich JSON content (definition, principles, when to use, examples)
+  diagramType String?       // Type of visual (matrix, flow, pyramid, etc.)
+  diagramData String?       // JSON for rendering the visual framework
+  exercises   String?       // JSON array of interactive exercises
+  relatedIds  String?       // Comma-separated related concept slugs
+  difficulty  String        @default("intermediate") // beginner, intermediate, advanced
+  cases       CaseConcept[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// Many-to-many relation between cases and concepts
+model CaseConcept {
+  id        String   @id @default(cuid())
+  caseId    String
+  case      Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  conceptId String
+  concept   Concept  @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([caseId, conceptId])
+}
+
+// Case generation job tracking for concurrent generation support
+model CaseGenerationJob {
+  id            String    @id @default(cuid())
+  status        String    @default("pending") // pending, extracting, analyzing, researching, generating_case, generating_exhibits, generating_questions, completed, failed, cancelled
+  progress      Int       @default(0) // 0-100 percentage
+  currentStep   String?   // Human-readable current step description
+  
+  // Source information
+  sourceType    String    // url, text, file
+  sourceUrl     String?   // Original URL if applicable
+  sourceTitle   String?   // Article title
+  sourceContent String?   // Article content (may be large)
+  
+  // Auto-detected metadata
+  company       String?
+  industry      String?
+  concepts      String?   // JSON array of concept names
+  
+  // Case categorization (to be passed to the created case)
+  category      String    @default("daily")       // "daily" or "canonical"
+  publishedDate DateTime?                          // Featured date for daily cases
+  track         String?                            // Track for canonical cases
+  skill         String?                            // Skills for canonical cases (comma-separated)
+  difficulty    String    @default("intermediate") // beginner, intermediate, advanced
+  
+  // Result
+  caseId        String?   // ID of created case when completed
+  errorMessage  String?   // Error message if failed
+  
+  // Relations
+  userId        String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+// Prompt version registry for tracking and A/B testing
+model PromptVersion {
+  id          String   @id @default(cuid())
+  promptType  String   // analyze, research, protagonist, case, exhibits, questions, validation, grading, sufficiency
+  version     String   // Semantic version: 1.0.0, 1.0.1, etc.
+  name        String?  // Human-readable name for this version
+  content     String   // The full prompt text (system + user template)
+  systemPrompt String? // System prompt portion
+  isActive    Boolean  @default(false)
+  description String?  // What changed in this version
+  createdAt   DateTime @default(now())
+  createdBy   String?  // User ID who created this version
+  
+  @@unique([promptType, version])
+  @@index([promptType, isActive])
+}
