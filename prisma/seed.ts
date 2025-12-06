@@ -3,7 +3,15 @@ import bcrypt from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
-const concepts = [
+// Helper to generate slug from name
+function slugify(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+const conceptsData = [
   // Strategy
   { name: "Porter's Five Forces", category: 'Strategy', description: 'Framework for analyzing competitive forces in an industry' },
   { name: 'SWOT Analysis', category: 'Strategy', description: 'Strengths, Weaknesses, Opportunities, Threats framework' },
@@ -40,6 +48,9 @@ const concepts = [
   { name: 'Network Effects', category: 'Economics', description: 'Value increase as more users join' },
   { name: 'Economies of Scale', category: 'Economics', description: 'Cost advantages from increased production' }
 ]
+
+// Add slug to each concept
+const concepts = conceptsData.map(c => ({ ...c, slug: slugify(c.name) }))
 
 async function main() {
   console.log('🌱 Seeding database...')
