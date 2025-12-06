@@ -558,7 +558,7 @@ function ScenarioBuilder({ data }: { data: ScenarioBuilderData }) {
     })
   }
 
-  const getConstraintUsage = (constraint: ScenarioBuilderData['constraints'][0]) => {
+  const getConstraintUsage = (constraint: NonNullable<ScenarioBuilderData['constraints']>[0]) => {
     let total = 0
     selectedOptions.forEach(optionId => {
       const option = data.options.find(o => o.id === optionId)
