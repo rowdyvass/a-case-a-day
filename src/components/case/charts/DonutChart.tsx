@@ -113,6 +113,7 @@ export function DonutChart({ data }: DonutChartProps) {
       <div className="relative">
         <ResponsiveContainer width="100%" height={320}>
           <PieChart>
+            {/* @ts-expect-error - activeIndex is valid but not in types */}
             <Pie
               data={chartData}
               cx="50%"
